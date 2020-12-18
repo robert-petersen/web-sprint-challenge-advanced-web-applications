@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+
+import axiosWithAuth from "./../Ulits/axiosWithAuth";
 
 const initialColor = {
   color: "",
@@ -7,7 +8,7 @@ const initialColor = {
 };
 
 const ColorList = ({ colors, updateColors }) => {
-  console.log(colors);
+  // console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
 
@@ -21,10 +22,39 @@ const ColorList = ({ colors, updateColors }) => {
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    console.log(colorToEdit);
+    axiosWithAuth()
+      .put(`/api/colors/${colorToEdit.id}`, colorToEdit )
+      .then((putRes)=>{
+        axiosWithAuth()
+        .get("/api/colors")
+        .then((res)=>{
+          updateColors(res.data);
+        })
+        .catch((err)=>{console.log("Get Bubbles after put Err: ", err);});
+      })
+      .catch((err)=>{
+        console.log("put err: ", err);
+      })
+
   };
 
   const deleteColor = color => {
     // make a delete request to delete this color
+    console.log(color);
+    axiosWithAuth()
+      .delete(`/api/colors/${color.id}`)
+      .then((deleteRes)=>{
+        axiosWithAuth()
+        .get("/api/colors")
+        .then((res)=>{
+          updateColors(res.data);
+        })
+        .catch((err)=>{console.log("Get Bubbles after delete Err: ", err);});
+      })
+      .catch((err)=>{
+        console.log("delete err: ", err)
+      });
   };
 
   return (
